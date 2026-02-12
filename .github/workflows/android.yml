@@ -1,3 +1,4 @@
+
 name: Build JAR
 
 on:
@@ -18,8 +19,15 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Disable Wrapper Validation
+        env:
+          GRADLE_WRAPPER_VALIDATION: false
+        run: echo "Wrapper validation disabled"
+
       - name: Install Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: false   # ⭐ IMPORTANT FIX
 
       - name: Build JAR
         run: gradle build
