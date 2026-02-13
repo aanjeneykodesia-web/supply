@@ -1,27 +1,46 @@
-name: Build Backend JAR
+name: Build APK and Backend JAR
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  jar:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build Backend
-        run: |
-          cd backend
-          ../gradlew build
+      # IMPORTANT FIX
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Upload JAR
+      # Build Backend JAR
+      - name: Build Backend JAR
+        run: ./gradlew :backend:build
+
+      # Build Android APK
+      - name: Build APK
+        run: ./gradlew :android-app:assembleDebug
+
+      # Upload JAR
+      - name: Upload Backend JAR
         uses: actions/upload-artifact@v4
         with:
           name: Backend-JAR
           path: backend/build/libs/*.jar
+
+      # Upload APK
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-APK
+          path: android-app/build/outputs/apk/debug/*.apk
