@@ -1,4 +1,4 @@
-name: Build APK and Backend JAR
+name: Build APK and JAR
 
 on:
   push:
@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -19,28 +18,28 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # IMPORTANT FIX
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      # Install Gradle manually (FIX wrapper error)
+      - name: Install Gradle
+        run: |
+          sudo apt update
+          sudo apt install gradle -y
 
       # Build Backend JAR
-      - name: Build Backend JAR
-        run: ./gradlew :backend:build
+      - name: Build Backend
+        run: gradle :backend:build
 
       # Build Android APK
       - name: Build APK
-        run: ./gradlew :android-app:assembleDebug
+        run: gradle :android-app:assembleDebug
 
       # Upload JAR
-      - name: Upload Backend JAR
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: Backend-JAR
           path: backend/build/libs/*.jar
 
       # Upload APK
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
           path: android-app/build/outputs/apk/debug/*.apk
