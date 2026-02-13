@@ -1,32 +1,27 @@
-name: Build APK
+name: Build Backend JAR
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  build:
+  jar:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Build Backend
+        run: |
+          cd backend
+          ../gradlew build
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
+      - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SupplyChainApp-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Backend-JAR
+          path: backend/build/libs/*.jar
