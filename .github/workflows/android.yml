@@ -1,5 +1,4 @@
-
-name: Build JAR
+name: Build APK
 
 on:
   push:
@@ -11,29 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Disable Wrapper Validation
-        env:
-          GRADLE_WRAPPER_VALIDATION: false
-        run: echo "Wrapper validation disabled"
-
-      - name: Install Gradle
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          validate-wrappers: false   # ⭐ IMPORTANT FIX
 
-      - name: Build JAR
-        run: gradle build
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
-      - name: Upload JAR
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: jar-file
-          path: build/libs/*.jar
+          name: SupplyChainApp-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
