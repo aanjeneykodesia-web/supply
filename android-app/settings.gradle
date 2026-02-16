@@ -1,3 +1,2 @@
 rootProject.name = "SupplyChainApp"
-include(":backend")
-include(":android-app")
+include(":app")
