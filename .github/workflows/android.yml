@@ -1,9 +1,8 @@
-name: Build Android APK (Find APK)
+name: Build APK
 
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -12,26 +11,25 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup JDK 17
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: temurin
         java-version: 17
 
-    - name: Make gradlew executable
-      run: chmod +x android-app/gradlew
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Grant Gradle permission
+      run: chmod +x gradlew
+      working-directory: android-app
 
     - name: Build APK
-      working-directory: android-app
       run: ./gradlew assembleDebug
+      working-directory: android-app
 
-    # 🔍 Find APK
-    - name: Find APK
-      run: find . -name "*.apk"
-
-    # Upload ALL APKs found
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: APK-Files
-        path: "**/*.apk"
+        name: SupplyChainApp-APK
+        path: android-app/app/build/outputs/apk/debug/*.apk
