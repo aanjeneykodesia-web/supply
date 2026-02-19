@@ -20,7 +20,7 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Grant Gradle permission
+    - name: Grant gradlew permission
       run: chmod +x gradlew
       working-directory: android-app
 
@@ -28,8 +28,12 @@ jobs:
       run: ./gradlew assembleDebug
       working-directory: android-app
 
+    - name: Find APK
+      run: ls app/build/outputs/apk/debug
+      working-directory: android-app
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: SupplyChainApp-APK
+        name: Supply-APK
         path: android-app/app/build/outputs/apk/debug/*.apk
