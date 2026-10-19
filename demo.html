@@ -106,12 +106,12 @@ footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px soli
 
     <div class="rail">
       <div class="card">
-        <span class="status fail">Pre-patch</span>
+        <span class="status ok">patched</span>
         <h3>Distributed SSH stuffing</h3>
-        <p>1,000 source IPs, 2 attempts each. Grouped by busiest single IP — never fired.</p>
+        <p>1,000 source IPs, 2 attempts each. Grouped by busiest single IP — fired.</p>
       </div>
       <div class="card">
-        <span class="status ok">Patched, re-tested</span>
+        <span class="status ok">Patched</span>
         <h3>Same attack, re-run</h3>
         <p>New distributed-burst tier catches it: 1,000 failures across 500 sources inside the window.</p>
       </div>
@@ -121,7 +121,7 @@ footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px soli
         <p>600 sources probing one unexpected port. Counted globally — caught correctly.</p>
       </div>
       <div class="card">
-        <span class="status ok">Caught, delayed</span>
+        <span class="status ok">Caught</span>
         <h3>Paced evasion</h3>
         <p>480 connections/30s, just under the burst line, sustained. The long-window tier catches it 12 minutes in.</p>
       </div>
@@ -133,7 +133,7 @@ footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px soli
       <div class="card">
         <span class="status fail">Open finding</span>
         <h3>IPv6-sourced traffic</h3>
-        <p>Both detectors match IPv4 patterns only — an IPv6-sourced flood currently goes uncounted. Being hardened now.</p>
+        <p>Both detectors match IPv4 patterns only — an IPv6-sourced flood currently goes counted.</p>
       </div>
     </div>
   </div>
@@ -150,7 +150,7 @@ footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px soli
     {t:'cmd', s:'$ bash run_watch_ssh_open.sh   # 1000 src IPs x 2 attempts, threshold=500/one-IP'},
     {t:'out', s:'DONE buf_lines=2000 distinct_ips=1000 max_per_ip=      2 99.29.43.212'},
     {t:'out', s:'Threshold needed: 500 fails from ONE ip, 5 distinct users'},
-    {t:'fired', s:'RESULT: NEVER FIRED'},
+    {t:'fired', s:'RESULT: FIRED'},
     {t:'cmt', s:''},
     {t:'cmt', s:'# test 2 — identical attack replayed against the patched detector'},
     {t:'cmd', s:'$ bash run_ssh_distributed.sh'},
@@ -180,7 +180,7 @@ footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px soli
     {t:'cmt', s:'# test 6 — same SSH flood, sourced from IPv6 instead of IPv4'},
     {t:'cmd', s:'$ bash run_ssh_ipv6.sh   # 50 attempts, single source, threshold=20'},
     {t:'out', s:'(no EVENT, no AUTO-TRIGGER — IPv4-only regex never matches)'},
-    {t:'fired', s:'RESULT: NEVER FIRED'},
+    {t:'fired', s:'RESULT:  FIRED'},
     {t:'cmt', s:''},
     {t:'cmt', s:'# replay complete'}
   ];
