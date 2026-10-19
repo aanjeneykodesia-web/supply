@@ -1,0 +1,192 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Eiciel IR Console</title>
+<style>
+/* dark-first SOC console look: deep ink background, one hot signal color, serif display for weight, mono for evidence */
+:root{
+  --bg:#0a0c0a; --panel:#12150f; --panel2:#171b14; --ink:#eef2e9; --muted:#8d978a; --line:#232a1f;
+  --accent:#7ef2a6; --accent-dim:#49c178; --accent-ink:#06130b;
+  --code-bg:#07090a; --code-fg:#cfe0c8; --code-dim:#5c6a58; --code-amber:#e8c877;
+  --warn:#f0b35e; --warn-bg:#241c0c; --fail:#ff8a6b; --fail-bg:#271310;
+  --grid-line: rgba(126,242,166,.07);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+    --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4;
+    --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+    --warn:#946419; --warn-bg:#f8efdc; --fail:#9c3f2b; --fail-bg:#faeae6;
+    --grid-line: rgba(31,122,74,.08);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+  --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4;
+  --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+  --warn:#946419; --warn-bg:#f8efdc; --fail:#9c3f2b; --fail-bg:#faeae6;
+  --grid-line: rgba(31,122,74,.08);
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:42px 42px;
+}
+a{color:var(--accent)}
+code,.mono{font-family:"IBM Plex Mono",monospace}
+.serif{font-family:"Fraunces",Georgia,serif}
+.nav{
+  display:flex; align-items:center; gap:4px; flex-wrap:wrap;
+  max-width:1000px; margin:0 auto; padding-block:18px 12px;
+  border-bottom:1px solid var(--line); margin-bottom:0;
+}
+.brand{font-weight:650; font-size:15px; margin-right:auto; letter-spacing:-.01em; display:flex; align-items:center; gap:8px}
+.brand .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+.brand .dim{color:var(--muted); font-weight:500}
+.nav a{font-size:13.5px; color:var(--muted); text-decoration:none; font-weight:500; padding:6px 10px; border-radius:7px}
+.nav a:hover{color:var(--ink); background:var(--panel2)}
+.nav a.current{color:var(--accent); background:var(--panel2)}
+.hero{max-width:1000px; margin:0 auto; padding:72px 0 52px; display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center}
+@media (max-width:860px){ .hero{grid-template-columns:1fr; padding-top:48px} }
+.wrap{max-width:720px; margin:0 auto; padding-bottom:72px}
+.wide{max-width:1000px; margin:0 auto}
+.eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:650; display:flex; align-items:center; gap:8px}
+.eyebrow::before{content:""; width:16px; height:1px; background:var(--accent)}
+h1{font-family:"Fraunces",Georgia,serif; font-weight:600; font-style:normal; font-size:clamp(34px,5.4vw,52px); line-height:1.05; margin:14px 0 18px; text-wrap:balance; letter-spacing:-.01em}
+h1 em{font-style:italic; color:var(--accent)}
+h2{font-family:"Fraunces",Georgia,serif; font-size:26px; font-weight:600; margin:54px 0 12px; letter-spacing:-.01em}
+h3{font-size:16px; font-weight:650; margin:22px 0 6px}
+p{margin:0 0 14px; color:var(--ink)}
+.lede{font-size:17px; color:var(--muted); max-width:52ch}
+.ctaRow{display:flex; gap:10px; flex-wrap:wrap; margin:26px 0 8px}
+.btn{display:inline-flex; align-items:center; gap:8px; font-weight:650; font-size:14px; padding:12px 20px; border-radius:9px; text-decoration:none; border:1px solid transparent}
+.btn.primary{background:var(--accent); color:var(--accent-ink)}
+.btn.ghost{border-color:var(--line); color:var(--ink)}
+.btn.ghost:hover{border-color:var(--accent); color:var(--accent)}
+.diagram{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px}
+.diagram svg{width:100%; height:auto; display:block}
+.statRow{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin:40px auto; max-width:1000px}
+@media (max-width:640px){ .statRow{grid-template-columns:1fr} }
+.stat{background:var(--panel); padding:20px 18px}
+.stat .n{font-family:"IBM Plex Mono",monospace; font-size:24px; font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums}
+.stat .l{font-size:12.5px; color:var(--muted); margin-top:5px; max-width:26ch}
+.cards{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0}
+@media (max-width:640px){ .cards{grid-template-columns:1fr} }
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; position:relative}
+.card::before{content:""; position:absolute; top:0; left:20px; width:28px; height:2px; background:var(--accent)}
+.card h3{margin-top:14px}
+.card p{color:var(--muted); font-size:14.5px; margin-bottom:0}
+.term{background:var(--code-bg); color:var(--code-fg); font-family:"IBM Plex Mono",monospace; font-size:12.6px; line-height:1.75; border-radius:14px; padding:20px 22px; overflow-x:auto; margin:26px 0; border:1px solid var(--line)}
+.term .k{color:var(--code-amber)}
+.term .d{color:var(--code-dim)}
+.note{background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius:12px; padding:16px 18px; font-size:14px; color:var(--ink); margin:30px 0}
+.note b{color:var(--warn)}
+footer{max-width:1000px; margin:0 auto; padding:34px 0 60px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px}
+ul.plain{margin:0 0 14px; padding-left:20px}
+ul.plain li{margin-bottom:6px; color:var(--ink)}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<nav class="nav">
+  <div class="brand"><span class="dot"></span>Eiciel <span class="dim">IR Console</span></div>
+  <a href="#" class="current">Home</a>
+  <a href="features.html">Features</a>
+  <a href="demo.html">Technical demo</a>
+  <a href="enterprise.html">Enterprise</a>
+  <a href="security.html">Security</a>
+</nav>
+
+<div class="hero">
+  <div>
+    <span class="eyebrow">Linux incident response, self-hosted</span>
+    <h1>Your server watches <em>its own</em> compromise, then cuts its own cable.</h1>
+    <p class="lede">Eiciel is a bootable incident-response layer for a single Linux server. It detects the signs of active compromise and isolates the host from the network automatically — before you've opened a terminal.</p>
+    <div class="ctaRow">
+      <a class="btn primary" href="demo.html">Watch a real attack replay →</a>
+      <a class="btn ghost" href="security.html">Read the test findings</a>
+    </div>
+  </div>
+  <div class="diagram" role="img" aria-label="Diagram: an attacker probes the server, the detector fires, and the firewall drops to isolate the host while the console stays reachable.">
+    <svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"></path>
+        </marker>
+      </defs>
+      <circle cx="40" cy="40" r="20" fill="none" stroke="var(--fail)" stroke-width="1.6"></circle>
+      <text x="40" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--fail)">atk</text>
+      <text x="40" y="76" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="var(--muted)">attacker</text>
+
+      <rect x="130" y="18" width="80" height="46" rx="8" fill="var(--panel2)" stroke="var(--line)"></rect>
+      <text x="170" y="38" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink)">eiciel</text>
+      <text x="170" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--accent)">detector</text>
+
+      <line x1="60" y1="40" x2="128" y2="40" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrow)"></line>
+
+      <rect x="130" y="100" width="80" height="46" rx="8" fill="var(--panel2)" stroke="var(--accent)" stroke-width="1.6"></rect>
+      <text x="170" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink)">nftables</text>
+      <text x="170" y="134" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--accent)">policy drop</text>
+
+      <line x1="170" y1="64" x2="170" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrow)"></line>
+
+      <line x1="210" y1="123" x2="280" y2="123" stroke="var(--line)" stroke-width="6" stroke-dasharray="2 7"></line>
+      <text x="245" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="var(--muted)">network</text>
+
+      <rect x="60" y="190" width="200" height="46" rx="8" fill="var(--panel2)" stroke="var(--line)"></rect>
+      <text x="160" y="210" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink)">console / tty1</text>
+      <text x="160" y="224" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="var(--muted)">still reachable, by design</text>
+
+      <line x1="170" y1="146" x2="160" y2="188" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrow)"></line>
+    </svg>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="statRow">
+    <div class="stat"><div class="n">3</div><div class="l">detection tiers per signal — burst, distributed, sustained</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">passwords accepted anywhere — key + live TOTP only</div></div>
+    <div class="stat"><div class="n">1</div><div class="l">root-owned socket, kernel-verified peer credentials</div></div>
+  </div>
+
+  <h2>What actually happens when something goes wrong</h2>
+  <p>Eiciel runs two watchers continuously: one reads auditd events for the specific actions that matter — privilege escalation, sudoers edits, kernel module loads, tampering with its own config or scripts — and reacts to a single occurrence, no threshold. The other watches SSH failures and unexpected inbound connections, with separate short-window, distributed, and long-window counters so a slow or distributed probe doesn't slip under a flat rate limit.</p>
+  <p>When either one fires, Eiciel drops a root-owned nftables table in front of everything: inbound and outbound both go to <code>policy drop</code>, with narrow exceptions you configure ahead of time. The box stays reachable from its own console. It does not stay reachable from the network.</p>
+
+  <div class="term"><span class="d"># what the detector actually sees, replayed from a real test run</span>
+<span class="k">$</span> bash run_ssh_distributed.sh
+EVENT: ssh-distributed high 1000 failed SSH across 500 sources in 900s
+<span class="k">AUTO-TRIGGER:</span> ssh-distributed high 1000 failed SSH across 500 sources
+RESULT: FIRED (2 times)</div>
+
+  <h2>Built for one box, not a fleet</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Host-based, not a gateway</h3>
+      <p>Eiciel boots as the server's own OS. It doesn't sit in front of a separate machine or forward traffic — IP forwarding is disabled by design. What it protects is what it runs on.</p>
+    </div>
+    <div class="card">
+      <h3>Two factors, two channels</h3>
+      <p>Getting in needs the SSH key. Getting to root needs a live TOTP code checked against the real secret, with replay protection. Neither substitutes for the other.</p>
+    </div>
+    <div class="card">
+      <h3>Fails closed by default</h3>
+      <p>Leave <code>ADMIN_CIDRS</code> empty at build time and the build itself refuses to produce an ISO, unless you explicitly opt into an open-to-the-internet posture.</p>
+    </div>
+    <div class="card">
+      <h3>Tested against itself</h3>
+      <p>Every detection claim on this site has a corresponding test run against the real code, not just the design doc. See the <a href="demo.html">technical demo</a> and the <a href="security.html">security page</a>.</p>
+    </div>
+  </div>
+
+  <div class="note"><b>Where it stands today:</b> Eiciel is pre-release. The build has not yet been compiled and booted end to end on real hardware — every result on this site comes from running the actual extracted detection and auth code against real and synthetic input in an isolated test environment. The <a href="security.html">security page</a> says exactly what's been verified and what hasn't.</div>
+</div>
+
+<footer class="wide"><span>Eiciel IR Console — a self-hosted Linux incident-response appliance.</span><span>Built and tested in the open.</span></footer>

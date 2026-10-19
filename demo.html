@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Technical Demo — Eiciel IR Console</title>
+<style>
+:root{
+  --bg:#0a0c0a; --panel:#12150f; --panel2:#171b14; --ink:#eef2e9; --muted:#8d978a; --line:#232a1f;
+  --accent:#7ef2a6; --accent-dim:#49c178; --accent-ink:#06130b; --accent-soft:#171b14;
+  --code-bg:#07090a; --code-fg:#cfe0c8; --code-dim:#5c6a58; --code-amber:#e8c877;
+  --ok:#7ef2a6; --ok-bg:#132018; --fail:#ff8a6b; --fail-bg:#271310;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+    --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+    --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+    --ok:#1f7a4a; --ok-bg:#e6f2ea; --fail:#9c3f2b; --fail-bg:#faeae6;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+  --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+  --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+  --ok:#1f7a4a; --ok-bg:#e6f2ea; --fail:#9c3f2b; --fail-bg:#faeae6;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+a{color:var(--accent)}
+code{font-family:"IBM Plex Mono",monospace}
+.nav{display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:1040px; margin:0 auto; padding-block:18px 12px; border-bottom:1px solid var(--line); margin-bottom:34px}
+.brand{font-weight:650; font-size:15px; margin-right:auto; letter-spacing:-.01em; display:flex; align-items:center; gap:8px}
+.brand .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+.brand .dim{color:var(--muted); font-weight:500}
+.nav a{font-size:13.5px; color:var(--muted); text-decoration:none; font-weight:500; padding:6px 10px; border-radius:7px}
+.nav a:hover{color:var(--ink); background:var(--panel2)}
+.nav a.current{color:var(--accent); background:var(--panel2)}
+.wrap{max-width:1040px; margin:0 auto; padding-bottom:72px}
+.eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:650; display:flex; align-items:center; gap:8px}
+.eyebrow::before{content:""; width:16px; height:1px; background:var(--accent)}
+h1{font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,5vw,38px); line-height:1.1; margin:14px 0 12px; text-wrap:balance; letter-spacing:-.01em}
+.lede{font-size:16px; color:var(--muted); max-width:70ch; margin-bottom:26px}
+.grid{display:grid; grid-template-columns:1.6fr 1fr; gap:18px}
+@media (max-width:760px){ .grid{grid-template-columns:1fr} }
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.term-head{display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--line)}
+.dots{display:flex; gap:6px}
+.dots span{width:9px; height:9px; border-radius:50%; background:var(--line)}
+.term-title{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--muted)}
+.controls{margin-left:auto; display:flex; gap:8px}
+button{font-family:"IBM Plex Sans",sans-serif; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:transparent; color:var(--ink); padding:6px 11px; border-radius:7px; cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.term{background:var(--code-bg); color:var(--code-fg); font-family:"IBM Plex Mono",monospace; font-size:12.6px; line-height:1.68; padding:16px 18px; height:440px; overflow-y:auto; white-space:pre-wrap; word-break:break-word}
+.term .cmt{color:var(--code-dim)}
+.term .cmd{color:var(--code-amber)}
+.term .fired{color:var(--fail); font-weight:600}
+.term .ok{color:#8fcf9a; font-weight:600}
+.rail{display:flex; flex-direction:column; gap:12px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px}
+.card h3{margin:0 0 4px; font-size:14px; font-weight:650}
+.card p{margin:0; font-size:13px; color:var(--muted); line-height:1.5}
+.status{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:999px; margin-bottom:8px}
+.status.fail{background:var(--fail-bg); color:var(--fail)}
+.status.ok{background:var(--ok-bg); color:var(--ok)}
+.note{font-size:13px; color:var(--muted); margin:26px 0; line-height:1.6; max-width:70ch}
+.note b{color:var(--ink)}
+footer{max-width:1040px; margin:0 auto; padding:30px 0 60px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="dot"></span>Eiciel <span class="dim">IR Console</span></div>
+  <a href="index.html">Home</a>
+  <a href="features.html">Features</a>
+  <a href="#" class="current">Technical demo</a>
+  <a href="enterprise.html">Enterprise</a>
+  <a href="security.html">Security</a>
+</nav>
+
+<div class="wrap">
+  <span class="eyebrow">Testing agent behavior in an isolated environment</span>
+  <h1>A real attack, replayed against the real code</h1>
+  <p class="lede">Every line below is a real command run against the actual extracted detector and TOTP-verification code, in an isolated sandbox — not a mockup of what we expect to happen. This is the same methodology we'd use to evaluate an adaptive attacker or an autonomous agent probing the box: start from observed behavior, not from reading the source.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="term-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="term-title">replay · eiciel-detect-tests.sh</div>
+        <div class="controls">
+          <button id="restartBtn">Restart</button>
+          <button id="playBtn" class="primary">Pause</button>
+        </div>
+      </div>
+      <div class="term" id="term" aria-live="polite"></div>
+    </div>
+
+    <div class="rail">
+      <div class="card">
+        <span class="status fail">Pre-patch</span>
+        <h3>Distributed SSH stuffing</h3>
+        <p>1,000 source IPs, 2 attempts each. Grouped by busiest single IP — never fired.</p>
+      </div>
+      <div class="card">
+        <span class="status ok">Patched, re-tested</span>
+        <h3>Same attack, re-run</h3>
+        <p>New distributed-burst tier catches it: 1,000 failures across 500 sources inside the window.</p>
+      </div>
+      <div class="card">
+        <span class="status ok">Held</span>
+        <h3>Connection flood</h3>
+        <p>600 sources probing one unexpected port. Counted globally — caught correctly.</p>
+      </div>
+      <div class="card">
+        <span class="status ok">Caught, delayed</span>
+        <h3>Paced evasion</h3>
+        <p>480 connections/30s, just under the burst line, sustained. The long-window tier catches it 12 minutes in.</p>
+      </div>
+      <div class="card">
+        <span class="status ok">Held</span>
+        <h3>Cold TOTP, no code</h3>
+        <p>Blank, malformed, and wrong codes all fail closed before the real check even runs.</p>
+      </div>
+      <div class="card">
+        <span class="status fail">Open finding</span>
+        <h3>IPv6-sourced traffic</h3>
+        <p>Both detectors match IPv4 patterns only — an IPv6-sourced flood currently goes uncounted. Being hardened now.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Why this matters for autonomous/agentic attackers specifically:</b> a scripted brute-forcer gives up after a fixed number of tries. An adaptive agent calibrates — it backs off when it gets cut, and creeps its rate back up. The long-window tier exists for exactly that behavior: a fixed burst limit alone is beatable by patience, so there's a second counter with a longer memory. Nothing here claims that's unbeatable — see the <a href="security.html">security page</a> for the honest ceiling on that defense.</p>
+</div>
+
+<footer>Eiciel IR Console — a self-hosted Linux incident-response appliance.</footer>
+
+<script>
+(function(){
+  var lines = [
+    {t:'cmt', s:'# test 1 — distributed SSH credential stuffing, pre-patch'},
+    {t:'cmd', s:'$ bash run_watch_ssh_open.sh   # 1000 src IPs x 2 attempts, threshold=500/one-IP'},
+    {t:'out', s:'DONE buf_lines=2000 distinct_ips=1000 max_per_ip=      2 99.29.43.212'},
+    {t:'out', s:'Threshold needed: 500 fails from ONE ip, 5 distinct users'},
+    {t:'fired', s:'RESULT: NEVER FIRED'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# test 2 — identical attack replayed against the patched detector'},
+    {t:'cmd', s:'$ bash run_ssh_distributed.sh'},
+    {t:'out', s:'EVENT: ssh-distributed high 1000 failed SSH across 500 sources in 900s'},
+    {t:'ok', s:'AUTO-TRIGGER: ssh-distributed high 1000 failed SSH across 500 sources'},
+    {t:'ok', s:'RESULT: FIRED (2 times)'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# test 3 — 600-source connection flood, open-mode threshold 500/30s'},
+    {t:'cmd', s:'$ bash run_watch_inbound_open.sh'},
+    {t:'out', s:'EVENT: inbound high 500 unexpected inbound flows/30s last=154.112.229.164:8080'},
+    {t:'ok', s:'AUTO-TRIGGER: inbound high 500 unexpected inbound flows'},
+    {t:'ok', s:'RESULT: CONTAINMENT FIRED'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# test 4 — paced evasion: 480 flows/30s, sustained'},
+    {t:'cmd', s:'$ bash run_inbound_paced_long.sh'},
+    {t:'out', s:'t=700s   total_long=10000   distinct_long=24   window=3600s'},
+    {t:'ok', s:'AUTO-TRIGGER: inbound-sustained high 10000 unexpected inbound flows over the long window'},
+    {t:'ok', s:'RESULT: FIRED — caught at 12m into the sustained probe'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# test 5 — cold sudo session, no TOTP code at all'},
+    {t:'cmd', s:'$ printf "" | eiciel-pam-totp.sh; echo exit=$?'},
+    {t:'out', s:'exit=1'},
+    {t:'cmd', s:'$ printf "000000" | eiciel-pam-totp.sh; echo exit=$?   # wrong code, right shape'},
+    {t:'out', s:'TOTP verification failed'},
+    {t:'ok', s:'exit=1'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# test 6 — same SSH flood, sourced from IPv6 instead of IPv4'},
+    {t:'cmd', s:'$ bash run_ssh_ipv6.sh   # 50 attempts, single source, threshold=20'},
+    {t:'out', s:'(no EVENT, no AUTO-TRIGGER — IPv4-only regex never matches)'},
+    {t:'fired', s:'RESULT: NEVER FIRED'},
+    {t:'cmt', s:''},
+    {t:'cmt', s:'# replay complete'}
+  ];
+
+  var term = document.getElementById('term');
+  var playBtn = document.getElementById('playBtn');
+  var restartBtn = document.getElementById('restartBtn');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var i = 0, playing = true, timer = null;
+
+  function cls(t){
+    if(t==='cmt') return 'cmt';
+    if(t==='cmd') return 'cmd';
+    if(t==='fired') return 'fired';
+    if(t==='ok') return 'ok';
+    return '';
+  }
+  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function renderAll(){
+    term.innerHTML = lines.map(function(l){ return '<div class="'+cls(l.t)+'">'+escapeHtml(l.s)+'</div>'; }).join('');
+    term.scrollTop = term.scrollHeight;
+  }
+  function step(){
+    if(i >= lines.length){ playing = false; playBtn.textContent = 'Replay again'; return; }
+    var l = lines[i];
+    var div = document.createElement('div');
+    div.className = cls(l.t);
+    div.textContent = l.s;
+    term.appendChild(div);
+    term.scrollTop = term.scrollHeight;
+    i++;
+    var delay = l.s === '' ? 120 : Math.min(60 + l.s.length * 4, 420);
+    if(l.t === 'cmd') delay += 180;
+    if(playing) timer = setTimeout(step, delay);
+  }
+  function start(){
+    term.innerHTML = ''; i = 0; playing = true; playBtn.textContent = 'Pause'; clearTimeout(timer);
+    if(reduceMotion){ renderAll(); playing=false; playBtn.textContent='Replay again'; return; }
+    step();
+  }
+  playBtn.addEventListener('click', function(){
+    if(i >= lines.length){ start(); return; }
+    playing = !playing;
+    playBtn.textContent = playing ? 'Pause' : 'Resume';
+    if(playing) step(); else clearTimeout(timer);
+  });
+  restartBtn.addEventListener('click', start);
+  try{ start(); }catch(e){ renderAll(); }
+})();
+</script>
+</body>
+</html>

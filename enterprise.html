@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enterprise Deployment — Eiciel IR Console</title>
+<style>
+:root{
+  --bg:#0a0c0a; --panel:#12150f; --panel2:#171b14; --ink:#eef2e9; --muted:#8d978a; --line:#232a1f;
+  --accent:#7ef2a6; --accent-dim:#49c178; --accent-ink:#06130b; --accent-soft:#171b14;
+  --code-bg:#07090a; --code-fg:#cfe0c8; --code-dim:#5c6a58; --code-amber:#e8c877;
+  --warn:#f0b35e; --warn-bg:#241c0c;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+    --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+    --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+    --warn:#946419; --warn-bg:#f8efdc;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+  --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+  --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+  --warn:#946419; --warn-bg:#f8efdc;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+a{color:var(--accent)}
+code{font-family:"IBM Plex Mono",monospace}
+.nav{display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:980px; margin:0 auto; padding-block:18px 12px; border-bottom:1px solid var(--line); margin-bottom:34px}
+.brand{font-weight:650; font-size:15px; margin-right:auto; letter-spacing:-.01em; display:flex; align-items:center; gap:8px}
+.brand .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+.brand .dim{color:var(--muted); font-weight:500}
+.nav a{font-size:13.5px; color:var(--muted); text-decoration:none; font-weight:500; padding:6px 10px; border-radius:7px}
+.nav a:hover{color:var(--ink); background:var(--panel2)}
+.nav a.current{color:var(--accent); background:var(--panel2)}
+.wrap{max-width:760px; margin:0 auto; padding-bottom:72px}
+.wide{max-width:980px; margin:0 auto}
+.eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:650; display:flex; align-items:center; gap:8px}
+.eyebrow::before{content:""; width:16px; height:1px; background:var(--accent)}
+h1{font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,5vw,40px); line-height:1.1; margin:14px 0 14px; text-wrap:balance; letter-spacing:-.01em}
+h2{font-family:"Fraunces",Georgia,serif; font-size:23px; font-weight:600; margin:46px 0 10px; letter-spacing:-.01em}
+h3{font-size:15.5px; font-weight:650; margin:20px 0 6px}
+p{margin:0 0 14px; color:var(--ink)}
+.lede{font-size:16.5px; color:var(--muted); max-width:62ch}
+ul.plain{margin:0 0 14px; padding-left:20px}
+ul.plain li{margin-bottom:7px}
+.term{background:var(--code-bg); color:var(--code-fg); font-family:"IBM Plex Mono",monospace; font-size:12.4px; line-height:1.7; border-radius:12px; padding:16px 18px; overflow-x:auto; margin:14px 0 22px; border:1px solid var(--line)}
+.term .d{color:var(--code-dim)}
+.note{background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius:10px; padding:14px 16px; font-size:14px; margin:26px 0}
+.note b{color:var(--warn)}
+.checklist{list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:10px}
+.checklist li{display:flex; gap:10px; align-items:flex-start; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:14px}
+.checklist .mark{color:var(--accent); font-weight:700; margin-top:1px}
+footer{max-width:980px; margin:0 auto; padding:30px 0 60px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="dot"></span>Eiciel <span class="dim">IR Console</span></div>
+  <a href="index.html">Home</a>
+  <a href="features.html">Features</a>
+  <a href="demo.html">Technical demo</a>
+  <a href="#" class="current">Enterprise</a>
+  <a href="security.html">Security</a>
+</nav>
+
+<div class="wrap">
+  <span class="eyebrow">Deploying on a company server</span>
+  <h1>What changes when it's not your personal box</h1>
+  <p class="lede">Eiciel's software hardening is strong against someone working their way up from a foothold. On company infrastructure, the thing that actually decides your risk is who holds console, hypervisor, and cloud-IAM access — not just who has the SSH key.</p>
+
+  <h2>Build-time configuration</h2>
+  <p>Everything below is set once, at build time, in <code>config/config.local.env</code>, and baked into the ISO — there's no runtime toggle to accidentally leave at an insecure default.</p>
+  <div class="term"><span class="d"># the build refuses to produce an ISO with no network access control,
+# unless you explicitly opt into exposing SSH to the internet</span>
+ADMIN_CIDRS="10.20.0.0/24"       <span class="d"># your management network</span>
+ALLOW_OPEN_SSH="0"               <span class="d"># leave unset/0 unless you mean it</span></div>
+  <p>Leaving <code>ADMIN_CIDRS</code> empty without setting <code>ALLOW_OPEN_SSH=1</code> fails the build outright — this isn't a warning you can click past.</p>
+
+  <h2>The access boundary that actually matters</h2>
+  <p>Over the network, Eiciel holds up: the SSH key gets a constrained shell, and root needs a separate TOTP code with no bypass we could find on a cold session. But console access — a datacenter KVM, a cloud provider's serial console, a hypervisor's VM console — skips both factors entirely. Whoever can reboot the box and reach its boot menu gets a root shell, by design, as the documented disaster-recovery path.</p>
+  <p>In a company deployment, that access isn't rare. It's held by your ops team, your cloud IAM roles, and your hypervisor admins as a normal part of the job — which means the real security question shifts from "is SSH hardened enough" to "who, in this organization, can reach a console for this machine, and is that list as short as it should be."</p>
+
+  <h2>A deployment checklist, not a feature list</h2>
+  <ul class="checklist">
+    <li><span class="mark">01</span>Set a GRUB superuser password (<code>password_pbkdf2</code>) before shipping to production — the boot menu has none by default.</li>
+    <li><span class="mark">02</span>Audit who holds console/serial/KVM access for the host, separately from who holds SSH keys.</li>
+    <li><span class="mark">03</span>Decide whether <code>sudo</code>'s default 15-minute credential cache is acceptable for your threat model, or whether to force <code>timestamp_timeout=0</code> so every privileged action re-checks TOTP.</li>
+    <li><span class="mark">04</span>Treat the webhook/alerting target as part of your incident response plan, not an afterthought — containment events fire locally whether or not anything is listening on the other end.</li>
+    <li><span class="mark">05</span>Plan for the recovery path deliberately: sealed secrets require console presence to unlock, which is correct for keeping them off a stolen disk, but means losing console access and losing the unlock key are both real failure modes to plan around.</li>
+  </ul>
+
+  <h2>Separation of duties</h2>
+  <p>If the goal is tamper-evident incident response, you generally don't want the people who can reboot the box to also be able to silently reach root with no audit trail. That's a policy decision outside the software — Eiciel logs what it sees, but it can't log what happens before it's running.</p>
+
+  <div class="note"><b>Before this goes anywhere production:</b> this build has not yet been compiled and booted end to end on real hardware. Everything on this page describes the design and what we've verified by running the real code in isolation — see the <a href="security.html">security page</a> for exactly what that does and doesn't cover.</div>
+</div>
+
+<footer class="wide">Eiciel IR Console — a self-hosted Linux incident-response appliance.</footer>
+</body>
+</html>

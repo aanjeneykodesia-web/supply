@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security Verification — Eiciel IR Console</title>
+<style>
+:root{
+  --bg:#0a0c0a; --panel:#12150f; --panel2:#171b14; --ink:#eef2e9; --muted:#8d978a; --line:#232a1f;
+  --accent:#7ef2a6; --accent-dim:#49c178; --accent-ink:#06130b; --accent-soft:#171b14;
+  --code-bg:#07090a; --code-fg:#cfe0c8; --code-dim:#5c6a58; --code-amber:#e8c877;
+  --ok:#7ef2a6; --ok-bg:#132018; --warn:#f0b35e; --warn-bg:#241c0c; --fail:#ff8a6b; --fail-bg:#271310;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+    --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+    --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+    --ok:#1f7a4a; --ok-bg:#e6f2ea; --warn:#946419; --warn-bg:#f8efdc; --fail:#9c3f2b; --fail-bg:#faeae6;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+  --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+  --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+  --ok:#1f7a4a; --ok-bg:#e6f2ea; --warn:#946419; --warn-bg:#f8efdc; --fail:#9c3f2b; --fail-bg:#faeae6;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+a{color:var(--accent)}
+code{font-family:"IBM Plex Mono",monospace}
+.nav{display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:900px; margin:0 auto; padding-block:18px 12px; border-bottom:1px solid var(--line); margin-bottom:34px}
+.brand{font-weight:650; font-size:15px; margin-right:auto; letter-spacing:-.01em; display:flex; align-items:center; gap:8px}
+.brand .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+.brand .dim{color:var(--muted); font-weight:500}
+.nav a{font-size:13.5px; color:var(--muted); text-decoration:none; font-weight:500; padding:6px 10px; border-radius:7px}
+.nav a:hover{color:var(--ink); background:var(--panel2)}
+.nav a.current{color:var(--accent); background:var(--panel2)}
+.wrap{max-width:760px; margin:0 auto; padding-bottom:72px}
+.wide{max-width:900px; margin:0 auto}
+.eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:650; display:flex; align-items:center; gap:8px}
+.eyebrow::before{content:""; width:16px; height:1px; background:var(--accent)}
+h1{font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,5vw,40px); line-height:1.1; margin:14px 0 14px; text-wrap:balance; letter-spacing:-.01em}
+h2{font-family:"Fraunces",Georgia,serif; font-size:23px; font-weight:600; margin:46px 0 6px; letter-spacing:-.01em}
+h3{font-size:15px; font-weight:650; margin:0 0 4px}
+p{margin:0 0 14px; color:var(--ink)}
+.lede{font-size:16.5px; color:var(--muted); max-width:62ch}
+.finding{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:14px 0}
+.finding .row{display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap}
+.sev{font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:3px 9px; border-radius:999px}
+.sev.high{background:var(--fail-bg); color:var(--fail)}
+.sev.med{background:var(--warn-bg); color:var(--warn)}
+.sev.fixed{background:var(--ok-bg); color:var(--ok)}
+.finding p{margin:0; font-size:14px; color:var(--muted)}
+.finding p.fix{color:var(--ink); margin-top:8px}
+.finding p.fix b{color:var(--ok)}
+.methNote{display:flex; gap:12px; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:20px 0; font-size:13.5px}
+.methNote b{display:block; margin-bottom:2px; color:var(--accent)}
+table{width:100%; border-collapse:collapse; margin:14px 0 22px; font-size:13.5px}
+th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+th{color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em}
+.tableWrap{overflow-x:auto}
+footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="dot"></span>Eiciel <span class="dim">IR Console</span></div>
+  <a href="index.html">Home</a>
+  <a href="features.html">Features</a>
+  <a href="demo.html">Technical demo</a>
+  <a href="enterprise.html">Enterprise</a>
+  <a href="#" class="current">Security</a>
+</nav>
+
+<div class="wrap">
+  <span class="eyebrow">Evidence, not a score</span>
+  <h1>What's actually been tested, and what hasn't</h1>
+  <p class="lede">This page exists so you don't have to take "secure" on faith. Every finding below came from running the real extracted code against real or synthetic input, not from reading a design document. Fixed findings were re-tested after the fix, with the same attack, to confirm it actually holds.</p>
+
+  <div class="methNote">
+    <div><b>Method</b>Functions were extracted from the build script and run in an isolated sandbox against synthetic attack traffic and a real sudo/PAM stack. This catches logic and configuration bugs. It does not replace booting the actual ISO on real hardware, which has not yet been done.</div>
+  </div>
+
+  <h2>Findings</h2>
+
+  <div class="finding">
+    <div class="row"><span class="sev high">High — open</span><h3>Unprotected console/GRUB boot entry</h3></div>
+    <p>One boot menu entry boots directly to a root shell via the <code>single</code> kernel parameter. No GRUB password, no superuser list, no gate of any kind. Confirmed by reading the generated GRUB config — not theoretical.</p>
+    <p class="fix"><b>Mitigation:</b> set a GRUB superuser password before production use; see the <a href="enterprise.html">enterprise page</a>. This is also a documented, intentional disaster-recovery path, so the fix is a deployment decision, not a code patch.</p>
+  </div>
+
+  <div class="finding">
+    <div class="row"><span class="sev med">Medium — open</span><h3>sudo credential-cache window</h3></div>
+    <p>sudo's default 15-minute timestamp cache means a second privileged action in that window skips re-checking TOTP. Confirmed by reproducing the exact sudoers/PAM configuration with the real sudo binary.</p>
+    <p class="fix"><b>Mitigation:</b> add <code>Defaults timestamp_timeout=0</code> to force a fresh TOTP check on every <code>sudo</code> call.</p>
+  </div>
+
+  <div class="finding">
+    <div class="row"><span class="sev med">Medium — open</span><h3>IPv6-sourced traffic bypasses both detectors</h3></div>
+    <p>The SSH and inbound-connection detectors both match IPv4 address patterns only. A single IPv6 source, at any volume, currently goes uncounted — confirmed by replaying 50 failed logins from one IPv6 address against the real detector code: zero detections.</p>
+    <p class="fix"><b>Mitigation:</b> extend the IP-extraction patterns to IPv6, and add an <code>ip6 saddr</code> counterpart to the per-source nftables meter.</p>
+  </div>
+
+  <div class="finding">
+    <div class="row"><span class="sev fixed">Fixed, re-verified</span><h3>Distributed credential stuffing evaded the SSH detector</h3></div>
+    <p>1,000 source IPs, 2 attempts each, never crossed the per-source threshold. Re-run against the patched detector (a global/distinct-source counter): fired correctly.</p>
+  </div>
+
+  <div class="finding">
+    <div class="row"><span class="sev fixed">Fixed, re-verified</span><h3>Paced connection flood stayed under the burst threshold</h3></div>
+    <p>480 connections per 30 seconds, sustained, never crossed the short-window limit. Re-run against the patched detector (a long-window counter): fired at 12 minutes in.</p>
+  </div>
+
+  <div class="finding">
+    <div class="row"><span class="sev fixed">Verified, no bypass found</span><h3>Cold-session TOTP check</h3></div>
+    <p>Blank input, malformed input, and a correctly-formatted-but-wrong code were all tested against the real verification script. All three failed closed before reaching the cryptographic check.</p>
+  </div>
+
+  <h2>What this doesn't cover yet</h2>
+  <div class="tableWrap"><table>
+    <tr><th>Not yet verified</th><th>Why it matters</th></tr>
+    <tr><td>Full ISO build (<code>lb bootstrap</code>/<code>lb binary</code>) and boot on real hardware</td><td>Integration bugs — ordering, paths, missing dependencies — can't be seen from extracted functions alone.</td></tr>
+    <tr><td>Dashboard UI code in full</td><td>Reviewed its command dispatch and auth boundary closely; not every line.</td></tr>
+    <tr><td>GPG secrets-sealing flow under real hardware conditions</td><td>Logic reviewed; not exercised against a real TPM/console-presence check.</td></tr>
+    <tr><td>systemd unit ordering under real boot timing</td><td>Can only be confirmed by an actual boot.</td></tr>
+  </table></div>
+
+  <p>If you're evaluating this for production, the honest summary is: the detection and authentication logic has been tested hard and held up well where it mattered, two real gaps are open and documented above with fixes, and the thing that hasn't happened yet is a real boot on real hardware. Treat this page as current, not as a one-time audit — it gets updated as findings are closed or new ones are found.</p>
+</div>
+
+<footer class="wide">Eiciel IR Console — a self-hosted Linux incident-response appliance. Tested in the open.</footer>
+</body>
+</html>

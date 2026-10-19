@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Features — Eiciel IR Console</title>
+<style>
+:root{
+  --bg:#0a0c0a; --panel:#12150f; --panel2:#171b14; --ink:#eef2e9; --muted:#8d978a; --line:#232a1f;
+  --accent:#7ef2a6; --accent-dim:#49c178; --accent-ink:#06130b; --accent-soft:#171b14;
+  --code-bg:#07090a; --code-fg:#cfe0c8; --code-dim:#5c6a58; --code-amber:#e8c877;
+  --ok:#7ef2a6; --ok-bg:#132018;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+    --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+    --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+    --ok:#1f7a4a; --ok-bg:#e6f2ea;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f7f6f1; --panel:#ffffff; --panel2:#f1efe6; --ink:#15170f; --muted:#5d6155; --line:#e1ddcf;
+  --accent:#1f7a4a; --accent-dim:#1f7a4a; --accent-ink:#f2fbf4; --accent-soft:#eaf1ec;
+  --code-bg:#11140e; --code-fg:#d9e3d4; --code-dim:#6f7a66; --code-amber:#b4832f;
+  --ok:#1f7a4a; --ok-bg:#e6f2ea;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+a{color:var(--accent)}
+code,.mono{font-family:"IBM Plex Mono",monospace}
+.nav{display:flex; align-items:center; gap:4px; flex-wrap:wrap; max-width:980px; margin:0 auto; padding-block:18px 12px; border-bottom:1px solid var(--line); margin-bottom:34px}
+.brand{font-weight:650; font-size:15px; margin-right:auto; letter-spacing:-.01em; display:flex; align-items:center; gap:8px}
+.brand .dot{width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent)}
+.brand .dim{color:var(--muted); font-weight:500}
+.nav a{font-size:13.5px; color:var(--muted); text-decoration:none; font-weight:500; padding:6px 10px; border-radius:7px}
+.nav a:hover{color:var(--ink); background:var(--panel2)}
+.nav a.current{color:var(--accent); background:var(--panel2)}
+.wrap{max-width:760px; margin:0 auto; padding-bottom:72px}
+.wide{max-width:980px; margin:0 auto}
+.eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:650; display:flex; align-items:center; gap:8px}
+.eyebrow::before{content:""; width:16px; height:1px; background:var(--accent)}
+h1{font-family:"Fraunces",Georgia,serif; font-weight:600; font-size:clamp(28px,5vw,40px); line-height:1.1; margin:14px 0 14px; text-wrap:balance; letter-spacing:-.01em}
+h2{font-family:"Fraunces",Georgia,serif; font-size:23px; font-weight:600; margin:46px 0 4px; letter-spacing:-.01em}
+h2 .n{font-family:"IBM Plex Mono",monospace; color:var(--accent); font-weight:500; margin-right:10px; font-size:16px}
+h3{font-size:15.5px; font-weight:650; margin:18px 0 6px}
+p{margin:0 0 14px; color:var(--ink)}
+.lede{font-size:16.5px; color:var(--muted); max-width:62ch; margin-bottom:0}
+.sub{color:var(--muted); font-size:14.5px; max-width:64ch; margin-bottom:18px}
+.term{background:var(--code-bg); color:var(--code-fg); font-family:"IBM Plex Mono",monospace; font-size:12.4px; line-height:1.7; border-radius:12px; padding:16px 18px; overflow-x:auto; margin:14px 0 22px; border:1px solid var(--line)}
+.term .k{color:var(--code-amber)}
+.term .ok{color:var(--ok)}
+.term .d{color:var(--code-dim)}
+table{width:100%; border-collapse:collapse; margin:14px 0 22px; font-size:13.5px}
+th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+th{color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em}
+.tableWrap{overflow-x:auto}
+.tag{display:inline-block; font-size:11px; font-weight:650; background:var(--ok-bg); color:var(--ok); padding:2px 8px; border-radius:999px; letter-spacing:.02em}
+footer{max-width:980px; margin:0 auto; padding:30px 0 60px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;650&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="dot"></span>Eiciel <span class="dim">IR Console</span></div>
+  <a href="index.html">Home</a>
+  <a href="#" class="current">Features</a>
+  <a href="demo.html">Technical demo</a>
+  <a href="enterprise.html">Enterprise</a>
+  <a href="security.html">Security</a>
+</nav>
+
+<div class="wrap">
+  <span class="eyebrow">Network containment, in detail</span>
+  <h1>Three layers between a probe and a compromise</h1>
+  <p class="lede">Most of what's below runs before you'd ever notice something was wrong. This page walks through each layer in the order traffic actually hits it — what it catches, what it deliberately lets through, and why.</p>
+
+  <h2><span class="n">01</span>Perimeter — nftables, fail2ban, sshd</h2>
+  <p class="sub">The first line is boring on purpose: narrow the attack surface before any detection logic ever runs.</p>
+  <div class="tableWrap"><table>
+    <tr><th>Control</th><th>Setting</th><th>Why</th></tr>
+    <tr><td>Password auth</td><td><code>PasswordAuthentication no</code></td><td>Removes credential-stuffing and brute-force as categories entirely — there's nothing to guess.</td></tr>
+    <tr><td>Connection rate</td><td><code>30/minute burst 15</code> on new SSH connections</td><td>Caps raw connection volume at the packet level, before sshd even forks.</td></tr>
+    <tr><td>Per-source cap</td><td>nftables meter, 10 concurrent</td><td>One source can't exhaust connection slots on its own.</td></tr>
+    <tr><td>Auth attempts</td><td><code>MaxAuthTries 3</code>, <code>LoginGraceTime 10</code></td><td>Short, bounded window per connection attempt.</td></tr>
+    <tr><td>Repeat offenders</td><td>fail2ban: 2 fails / 10 min → 24h ban; recidive jail → 7 days</td><td>Escalating cost for an IP that keeps coming back.</td></tr>
+  </table></div>
+
+  <h2><span class="n">02</span>Behavioral detection — three counters, not one</h2>
+  <p class="sub">A single rate limit misses two realistic attack shapes: spread across many sources, or paced just under the line. Eiciel runs three counters per signal (SSH failures, unexpected inbound connections) to cover all three.</p>
+  <div class="tableWrap"><table>
+    <tr><th>Tier</th><th>Catches</th><th>Logic</th></tr>
+    <tr><td>Per-source burst</td><td>One IP hammering fast</td><td>Short window, grouped by busiest single source</td></tr>
+    <tr><td>Distributed burst</td><td>A botnet spread across many IPs</td><td>Same short window, but counted globally with a minimum-distinct-source floor</td></tr>
+    <tr><td>Sustained / paced</td><td>An attacker staying just under the burst threshold, for a long time</td><td>A separate long window (default one hour) with its own, higher total threshold</td></tr>
+  </table></div>
+  <div class="term"><span class="d"># the fix, re-tested against the exact attack that used to evade it</span>
+EVENT: ssh-distributed high 1000 failed SSH across 500 sources in 900s
+<span class="k">AUTO-TRIGGER:</span> ssh-distributed high 1000 failed SSH across 500 sources
+<span class="ok">RESULT: FIRED (2 times)</span></div>
+  <p>Any tier crossing its threshold triggers full containment — not a ban, not a log line. The whole point is that you don't have to be watching.</p>
+
+  <h2><span class="n">03</span>Unconditional tripwires — one event, no threshold</h2>
+  <p class="sub">Behavioral counters are for noisy, probing attacks. Some actions don't need a pattern to be suspicious — a single occurrence is enough.</p>
+  <table>
+    <tr><th>Audit key</th><th>Fires on</th></tr>
+    <tr><td><code>sudoers</code></td><td>Any write to <code>/etc/sudoers</code> or <code>/etc/sudoers.d/</code></td></tr>
+    <tr><td><code>module_load</code></td><td>A kernel module load</td></tr>
+    <tr><td><code>ssh_keys</code></td><td>A change to the SSH host keys</td></tr>
+    <tr><td><code>eiciel_scripts</code> / <code>watcher_tamper</code></td><td>Tampering with Eiciel's own scripts or watcher process</td></tr>
+    <tr><td><code>eiciel_secrets_read</code></td><td>Opening the sealed-secrets file, successful or not</td></tr>
+    <tr><td><code>isolation_lift</code></td><td>Running <code>nft</code> to undo containment itself</td></tr>
+  </table>
+  <p>Each of these runs under auditd, which reports from the kernel — not something a compromised userland process can quietly skip.</p>
+
+  <h2><span class="n">04</span>Two factors to reach root</h2>
+  <p class="sub">Entering the box and controlling it are two different events, gated by two different secrets on two different channels.</p>
+  <div class="term"><span class="d">IFS= read -r code || true
+code="$(printf '%s' "$code" | tr -d '[:space:]')"</span>
+[ -n "$code" ] || exit 1              <span class="d"># blank input: fail closed</span>
+[[ "$code" =~ ^[0-9]{6}$ ]] || exit 1 <span class="d"># malformed: fail closed</span>
+pyotp.TOTP(secret).verify(code, valid_window=1)  <span class="d"># real check, no bypass</span></div>
+  <p>A 95-second replay cache sits behind the check itself, so a captured valid code can't be reused even once.</p>
+
+  <p style="margin-top:40px"><a href="demo.html">→ See these detectors run against real attack traffic</a></p>
+</div>
+
+<footer class="wide">Eiciel IR Console — a self-hosted Linux incident-response appliance.</footer>
+</body>
+</html>
