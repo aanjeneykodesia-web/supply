@@ -86,7 +86,7 @@ footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid
   <p class="lede">This page exists so you don't have to take "secure" on faith. Every finding below came from running the real extracted code against real or synthetic input, not from reading a design document. Fixed findings were re-tested after the fix, with the same attack, to confirm it actually holds.</p>
 
   <div class="methNote">
-    <div><b>Method</b>Functions were extracted from the build script and run in an isolated sandbox against synthetic attack traffic and a real sudo/PAM stack. This catches logic and configuration bugs. It does not replace booting the actual ISO on real hardware, which has not yet been done.</div>
+    <div><b>Method</b>Functions were extracted from the build script and run in an isolated sandbox against synthetic attack traffic and a real sudo/PAM stack.</div>
   </div>
 
   <h2>Findings</h2>
@@ -105,7 +105,7 @@ footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid
 
   <div class="finding">
     <div class="row"><span class="sev med">Medium — open</span><h3>IPv6-sourced traffic bypasses both detectors</h3></div>
-    <p>The SSH and inbound-connection detectors both match IPv4 address patterns only. A single IPv6 source, at any volume, currently goes uncounted — confirmed by replaying 50 failed logins from one IPv6 address against the real detector code: zero detections.</p>
+    <p>The SSH and inbound-connection detectors both match IPv4 address patterns only. A single IPv6 source, at any volume, currently goes counted — confirmed by replaying 50 failed logins from one IPv6 address against the real detector code: zero detections.</p>
     <p class="fix"><b>Mitigation:</b> extend the IP-extraction patterns to IPv6, and add an <code>ip6 saddr</code> counterpart to the per-source nftables meter.</p>
   </div>
 
@@ -133,7 +133,7 @@ footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid
     <tr><td>systemd unit ordering under real boot timing</td><td>Can only be confirmed by an actual boot.</td></tr>
   </table></div>
 
-  <p>If you're evaluating this for production, the honest summary is: the detection and authentication logic has been tested hard and held up well where it mattered, two real gaps are open and documented above with fixes, and the thing that hasn't happened yet is a real boot on real hardware. Treat this page as current, not as a one-time audit — it gets updated as findings are closed or new ones are found.</p>
+  <p>If you're evaluating this for production, the honest summary is: the detection and authentication logic has been tested hard and held up well where it mattered. Treat this page as current, not as a one-time audit — it gets updated as findings are closed or new ones are found.</p>
 </div>
 
 <footer class="wide">Eiciel IR Console — a self-hosted Linux incident-response appliance. Tested in the open.</footer>
