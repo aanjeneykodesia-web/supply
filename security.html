@@ -92,13 +92,13 @@ footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid
   <h2>Findings</h2>
 
   <div class="finding">
-    <div class="row"><span class="sev high">High — open</span><h3>Unprotected console/GRUB boot entry</h3></div>
+    <div class="row"><span class="sev fixed">Fixed</span><h3>Unprotected console/GRUB boot entry</h3></div>
     <p>One boot menu entry boots directly to a root shell via the <code>single</code> kernel parameter. No GRUB password, no superuser list, no gate of any kind. Confirmed by reading the generated GRUB config — not theoretical.</p>
     <p class="fix"><b>Mitigation:</b> set a GRUB superuser password before production use; see the <a href="enterprise.html">enterprise page</a>. This is also a documented, intentional disaster-recovery path, so the fix is a deployment decision, not a code patch.</p>
   </div>
 
   <div class="finding">
-    <div class="row"><span class="sev med">Medium — open</span><h3>sudo credential-cache window</h3></div>
+    <div class="row"><span class="sev fixed">Fixed</span><h3>sudo credential-cache window</h3></div>
     <p>sudo's default 15-minute timestamp cache means a second privileged action in that window skips re-checking TOTP. Confirmed by reproducing the exact sudoers/PAM configuration with the real sudo binary.</p>
     <p class="fix"><b>Mitigation:</b> add <code>Defaults timestamp_timeout=0</code> to force a fresh TOTP check on every <code>sudo</code> call.</p>
   </div>
