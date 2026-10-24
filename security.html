@@ -104,10 +104,9 @@ footer{max-width:900px; margin:0 auto; padding:30px 0 60px; border-top:1px solid
   </div>
 
   <div class="finding">
-    <div class="row"><span class="sev med">Medium — open</span><h3>IPv6-sourced traffic bypasses both detectors</h3></div>
+    <div class="row"><span class="sev fixed">Fixed</span><h3>IPv6-sourced traffic bypasses both detectors</h3></div>
     <p>The SSH and inbound-connection detectors both match IPv4 address patterns only. A single IPv6 source, at any volume, currently goes counted — confirmed by replaying 50 failed logins from one IPv6 address against the real detector code: zero detections.</p>
-    <p class="fix"><b>Mitigation:</b> extend the IP-extraction patterns to IPv6, and add an <code>ip6 saddr</code> counterpart to the per-source nftables meter.</p>
-  </div>
+    
 
   <div class="finding">
     <div class="row"><span class="sev fixed">Fixed, re-verified</span><h3>Distributed credential stuffing evaded the SSH detector</h3></div>
